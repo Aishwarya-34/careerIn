@@ -1,9 +1,2 @@
-venv
-/__pycache__
-__pycache__/
-
-*.py[cod]
-.env
-# SQLite database files
-
-*.sqlite3
+*.pyc
+*.DS_Store
