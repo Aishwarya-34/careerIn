@@ -40,6 +40,17 @@ def resume_list(request):
     with open("web_application/app_core/static/myfile.txt", "r") as rf:
         internships = rf.read()
 
+    # First get the industry user added   -> resumes[len(resumes)-1].industry
+
+    # Second -> Call API from backend (Address = http://127.0.0.1:5000/?industry= +${}) 
+    # fetch(URL)  ->
+    #  Get this format = [{
+        #     "company": "AIA Chicago",
+        #     "link": "https://www.indeed.com/cmp/Aia-Group-Limited",
+        #     "title": "All levels - product architecture + design"
+        # }]
+    # response.Internship
+    # internships = response.Internship
     return render(request, 'resume_list.html',
         {'resumes': resumes, 'internships' : internships })
 

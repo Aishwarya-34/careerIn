@@ -43,38 +43,54 @@ def valid_industry(industry):
 
 def query_industry(industry):
 	# make input industry lowercase string separated by "+" instead of " "
-	industry = industry_to_string(industry)
-	internships = {}
-	paginator = 0
-	while(paginator < 10):
-		URL = "https://www.indeed.com/jobs?q=" + industry + "&jt=internship&start=" + str(paginator)
-		list_soup = BeautifulSoup(fetch(URL), "html.parser")
-		jobs = list_soup.find_all('div')
-		print("Jobs :",jobs)
-		for job in jobs: 
-			jobId = job.get('id')
-			print(job)
-			title = job.findAll('a', attrs={'class':'jobtitle'})[0].get('title')
-			
-			company = job.findAll('span', attrs={'class':'company'})[0].contents[0].strip()
-			if (company is None or len(company) == 0):
-				company = job.findAll('span', attrs={'class':'company'})[0].contents[1].contents[0].strip()
+	try:
+		industry = industry_to_string(industry)
+		internships = []
+		paginator = 0
+		while(paginator < 10):
+			URL = "https://www.indeed.com/jobs?q=" + industry + "&jt=internship&start=" + str(paginator)
+			print("URL :",URL)
+			list_soup = BeautifulSoup(fetch(URL), 'html5lib')
+			jobs = list_soup.findAll('div', attrs={'class':'job_seen_beacon'})
+			for job in jobs: 
+				title = job.findAll('h2', attrs={'class':'jobTitle'})[0].findAll('span')[0].get('title')
+				company = job.findAll('span', attrs={'class':'companyName'})
+				if company == None:
+					company=""
+				else:
+					company = company[0].findAll('a')[0].contents[0]
+				print("Company :",company)
 
-			link = "https://www.indeed.com" + job.findAll('a', attrs={'class':'jobtitle'})[0].get('href')
-			job_soup = BeautifulSoup(fetch(link), 'html5lib')
-			strings = job_soup.findAll('div', attrs={'class':'jobsearch-jobDescriptionText'})[0].stripped_strings
-			body = ""
-			for string in strings:
-				body = body + string.strip()
-			internships[jobId] = {
-				"title": title,
-				"company": company,
-				"link": link,
-				"body": body
-			}
+				associate_link = job.findAll('td', attrs={'class':'resultContent'})
+				print(associate_link)
+				link = "https://www.indeed.com" 
+				if associate_link ==None or len(associate_link) ==0:
+					link = URL
+				else:
+					associate_link = associate_link[0].findAll('a')[0].get('href')
+					link = link+associate_link
+				print("Link :",link)
+				body = ""
+				# if(associate_link !=None or len(associate_link) !=0):
+				# 	job_soup = BeautifulSoup(fetch(link), 'html5lib')
+				# 	strings = job_soup.findAll('div', attrs={'class':'jobsearch-jobDescriptionText'})
+				# 	if strings !=None or len(strings) !=0:
+				# 		strings = strings[0].stripped_strings
+				# 		for string in strings:
+				# 			body = body + string.strip()
 
-		paginator = paginator + 10
+				internships.append({
+					"title": title,
+					"company": company,
+					"link": link,
+				})
 
-	return internships
+			paginator = paginator + 10
+	except:
+		print("Some Scrap error")
+	
+
+	return {"Response":"good",
+	"Internship": internships}
 
 app.run(debug = True)
