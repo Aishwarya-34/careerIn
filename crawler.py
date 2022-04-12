@@ -3,7 +3,8 @@ from urllib.parse import urlparse
 import json
 from flask import Flask
 from flask import request
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
+import html5lib
 
 app = Flask(__name__)
 

@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 s = requests.Session()
 
 def fetch(url, data=None):
-    if data is None:
+    if d ata is None:
         return s.get(url).content
     else:
         return s.post(url, data=data).content
